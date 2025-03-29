@@ -2,12 +2,11 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { MongoClient } from "mongodb";
 import {
-  CreateDocumentSchema,
   DeleteDocumentSchema,
   GetDocumentByIdSchema,
   GetDocumentsSchema,
   UpdateDocumentSchema,
-} from "./schema";
+} from "./schema.js";
 
 const MONGO_URI =
   "mongodb+srv://rohankhuranadeviic:p9tka9oDPG73Su7f@cluster0.yehpb.mongodb.net";
@@ -42,11 +41,11 @@ async function connectToDatabase() {
 }
 connectToDatabase();
 
-server.operation({
-  name: "getDocuments",
-  description: "Get documents from a collection",
-  input: GetDocumentsSchema,
-  handler: async ({ collection, query = {}, limit = 100, skip = 0 }) => {
+server.tool(
+  "getDocuments",
+  "Get documents from a collection",
+  GetDocumentsSchema,
+  async ({ collection, query = {}, limit = 100, skip = 0 }) => {
     if (!db) {
       await connectToDatabase();
     }
@@ -69,14 +68,14 @@ server.operation({
         documents: [],
       };
     }
-  },
-});
+  }
+);
 
-server.operation({
-  name: "getDocumentById",
-  description: "Get a single document by ID from a collection",
-  input: GetDocumentByIdSchema,
-  handler: async ({ collection, id }) => {
+server.tool(
+  "getDocumentById",
+  "Get a single document by ID from a collection",
+  GetDocumentByIdSchema,
+  async ({ collection, id }) => {
     if (!db) {
       await connectToDatabase();
     }
@@ -95,14 +94,14 @@ server.operation({
         document: null,
       };
     }
-  },
-});
+  }
+);
 
-server.operation({
-  name: "createDocument",
-  description: "Create a new document in a collection",
-  input: CreateDocumentSchema,
-  handler: async ({ collection, document }) => {
+server.tool(
+  "createDocument",
+  "Create a new document in a collection",
+  CreateDocumentSchema,
+  async ({ collection, document }) => {
     if (!db) {
       await connectToDatabase();
     }
@@ -116,14 +115,14 @@ server.operation({
         success: false,
       };
     }
-  },
-});
+  }
+);
 
-server.operation({
-  name: "updateDocument",
-  description: "Update an existing document in a collection by ID",
-  input: UpdateDocumentSchema,
-  handler: async ({ collection, id, document }) => {
+server.tool(
+  "updateDocument",
+  "Update an existing document in a collection by ID",
+  UpdateDocumentSchema,
+  async ({ collection, id, document }) => {
     if (!db) {
       await connectToDatabase();
     }
@@ -139,14 +138,14 @@ server.operation({
         success: false,
       };
     }
-  },
-});
+  }
+);
 
-server.operation({
-  name: "deleteDocument",
-  description: "Delete a document from a collection by ID",
-  input: DeleteDocumentSchema,
-  handler: async ({ collection, id }) => {
+server.tool(
+  "deleteDocument",
+  "Delete a document from a collection by ID",
+  DeleteDocumentSchema,
+  async ({ collection, id }) => {
     if (!db) {
       await connectToDatabase();
     }
@@ -162,8 +161,8 @@ server.operation({
         success: false,
       };
     }
-  },
-});
+  }
+);
 
 process.on("SIGINT", async () => {
   console.log("Closing MongoDB connection...");
@@ -173,7 +172,7 @@ process.on("SIGINT", async () => {
 });
 
 const transport = new StdioServerTransport();
-server.listen(transport);
+server.connect(transport);
 
 connectToDatabase().then(() => {
   console.log("Connected to MongoDB. MCP server is listening...");
