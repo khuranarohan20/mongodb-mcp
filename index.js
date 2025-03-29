@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { MongoClient } from "mongodb";
 import {
+  CreateDocumentSchema,
   DeleteDocumentSchema,
   GetDocumentByIdSchema,
   GetDocumentsSchema,
